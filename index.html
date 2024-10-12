@@ -35,15 +35,23 @@
             recognition.continuous = true; // Keep listening continuously
             recognition.interimResults = true; // Get interim results for real-time display
 
+            let finalTranscript = ''; // Variable to hold the complete sentence
+
             recognition.onresult = (event) => {
+                let interimTranscript = ''; // Variable for interim results
                 // Loop through the results
                 for (let i = event.resultIndex; i < event.results.length; i++) {
                     const transcript = event.results[i][0].transcript;
                     if (event.results[i].isFinal) {
-                        // If the result is final, append it to the output
-                        outputDiv.innerHTML += `<p>${transcript}</p>`;
+                        // If the result is final, add to the final transcript
+                        finalTranscript += (finalTranscript ? ' ' : '') + transcript.trim();
+                    } else {
+                        // If the result is interim, append it to the interim transcript
+                        interimTranscript += transcript;
                     }
                 }
+                // Display final transcript in the output
+                outputDiv.innerHTML = `<p>${finalTranscript}</p>`;
             };
 
             recognition.onerror = (event) => {
