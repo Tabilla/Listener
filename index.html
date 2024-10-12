@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automatic Writer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #output {
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 100%;
+            height: 300px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Automatic Writer</h1>
+    <div id="output"></div>
+
+    <script>
+        // Check for browser support
+        if (!('SpeechRecognition' in window) && !('webkitSpeechRecognition' in window)) {
+            alert('Sorry, your browser does not support speech recognition. Please try Google Chrome or Safari.');
+        } else {
+            const outputDiv = document.getElementById('output');
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+
+            recognition.lang = 'en-GB'; // Set the language
+            recognition.continuous = true; // Keep listening continuously
+            recognition.interimResults = true; // Get interim results for real-time display
+
+            recognition.onresult = (event) => {
+                // Loop through the results
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        // If the result is final, append it to the output
+                        outputDiv.innerHTML += `<p>${transcript}</p>`;
+                    }
+                }
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+            };
+
+            recognition.onend = () => {
+                console.log('Speech recognition ended. Restarting...');
+                recognition.start(); // Restart recognition automatically
+            };
+
+            // Start recognition after the page loads
+            window.onload = () => {
+                recognition.start();
+            };
+        }
+    </script>
+</body>
+</html>
